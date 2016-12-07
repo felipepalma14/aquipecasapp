@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "766082602769",
+    "firebase_url": "https://epecas-15395.firebaseio.com",
+    "project_id": "epecas-15395",
+    "storage_bucket": "epecas-15395.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766082602769:android:b4c735b68cd8d9a5",
+        "android_client_info": {
+          "package_name": "com.example.felipe.e_pecas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766082602769-ca4hqosj0mbg80mlt69p2hplpq7q2bif.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDcUkheC_WMlSzIgqDXxIZMofrpQvw8-Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766082602769:android:2867c76704d3cd63",
+        "android_client_info": {
+          "package_name": "palma.felipe.aquipecas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766082602769-shptpttpkj96klenn656btl4p0sdju4c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "palma.felipe.aquipecas",
+            "certificate_hash": "93DE7FF024BE3C001A48EFCB635247C153CB7D13"
+          }
+        },
+        {
+          "client_id": "766082602769-ca4hqosj0mbg80mlt69p2hplpq7q2bif.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDcUkheC_WMlSzIgqDXxIZMofrpQvw8-Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766082602769-ca4hqosj0mbg80mlt69p2hplpq7q2bif.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
