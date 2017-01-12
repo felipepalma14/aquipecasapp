@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -19,14 +19,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import palma.felipe.aquipecas.Utils.CustomAdapterProduto;
+import palma.felipe.aquipecas.model.Marca;
+import palma.felipe.aquipecas.model.Modelo;
 import palma.felipe.aquipecas.model.Produto;
 
 public class ListagemProdutoActivity extends AppCompatActivity implements CustomAdapterProduto.AdapterListener {
 
     FirebaseDatabase database;
-    String marcaSelecionada;
-    String modeloSelecionado;
-    String anoSelecionado;
+    Marca marcaSelecionada;
+    Modelo modeloSelecionado;
+    //String anoSelecionado;
     boolean encontrado = false;
     ArrayList<Produto> produtos = new ArrayList<>();
     ProgressBar loading;
@@ -36,54 +38,54 @@ public class ListagemProdutoActivity extends AppCompatActivity implements Custom
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listagem_produto);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         loading =(ProgressBar)findViewById(R.id.loading);
 
         Bundle bundle = getIntent().getExtras();
 
-        marcaSelecionada = bundle.getString("MARCA");
-        modeloSelecionado = bundle.getString("MODELO");
-        anoSelecionado = bundle.getString("ANO");
+        marcaSelecionada = (Marca)bundle.get("MARCA");
+        modeloSelecionado = (Modelo)bundle.get("MODELO");
+        //anoSelecionado = bundle.getString("ANO");
 
         database = FirebaseDatabase.getInstance();
         //getKeyFromMarca(marcaSelecionada);
-        final DatabaseReference refMarcas = database.getReference();
+        final DatabaseReference rootRef = database.getReference();
 
-        refMarcas.child("marcas").orderByChild("nome").equalTo(marcaSelecionada).addListenerForSingleValueEvent(new ValueEventListener() {
+        Log.i("MARCA",marcaSelecionada.getNome());
+        Log.i("MODELO",modeloSelecionado.getNome());
+
+
+        rootRef.child("produtos").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot marca :dataSnapshot.getChildren()){
-                    Log.i("MARCA",marca.getKey());//MARCA
-                    refMarcas.child("marcas").child(marca.getKey()).child("modelos").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            String key;
-                            for(DataSnapshot modelo:dataSnapshot.getChildren()) {
-                                Log.i("LOG", "MODELO: "+ modelo.getKey());//OK
-                                key = modelo.getKey();
-                                Log.i("MODELOS", modelo.child("modelo").child("nome").getValue().toString());//OK
-                                if(modelo.child("modelo").child("nome").getValue().toString().equals(modeloSelecionado)){
-                                    Log.i("OK", key);
-                                    insereProduto(key);
-                                }
-                            }
-                            //criarAdapter(produtos);
-                        }
+                for(DataSnapshot produto:dataSnapshot.getChildren()){
+                    String keyModelo = produto.child("modelo").getChildren().iterator().next().getKey().toString();
+                    Log.i("KEY_PRODUTO",keyModelo + " = " + modeloSelecionado.getKey());
+                    if(keyModelo.equals(modeloSelecionado.getKey())){
+                        Produto p = new Produto();
+                        p.setNome(produto.child("peca").getValue().toString());
+                        p.setImagem(produto.child("imagem").getValue().toString());
+                        p.setValor(Double.valueOf(produto.child("valor").getValue().toString()));
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                        Log.i("KEY_PRODUTO",produto.child("peca").getValue().toString());
+                        produtos.add(p);
 
-                        }
-                    });
+                    }
+
                 }
 
+                criarAdapter(produtos);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
 
+
+        });
 
 
 
@@ -125,16 +127,14 @@ public class ListagemProdutoActivity extends AppCompatActivity implements Custom
 
     public void criarAdapter(ArrayList<Produto> lista){
         // Criar o adapter
-        for (Produto pro:lista) {
-            Log.i("PROUTO",String.valueOf(pro.getValor()));
-        }
+
         CustomAdapterProduto adapter = new CustomAdapterProduto(ListagemProdutoActivity.this, lista);
         // Recupera a referencia do nosso RecyclerView do layout
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.lista_produtos);
         // Conecta nosso RecyclerView com o Adapter
         recyclerView.setAdapter(adapter);
         // Seta a orientacao do nosso RecyclerView como LinearLayout ( Vertical )
-        GridLayoutManager grid = new GridLayoutManager(this,2,LinearLayoutManager.VERTICAL,false);
+        GridLayoutManager grid = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
         grid.setOrientation(GridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(grid);
 
@@ -152,11 +152,20 @@ public class ListagemProdutoActivity extends AppCompatActivity implements Custom
     @Override
     public void onClickListener(View view, int position) {
         String pecaSelecionada = produtos.get(position).getNome();
+
         Intent intent = new Intent(this,DetalhesProdutoActivity.class);
+        intent.putExtra("PRODUTO",produtos.get(position));
         startActivity(intent);
 
     }
 
-
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

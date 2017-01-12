@@ -1,16 +1,31 @@
 package palma.felipe.aquipecas.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Roberlandio on 29/11/2016.
  */
-public class Produto {
+public class Produto implements Serializable{
     private String nome;
     private String imagem;
     private boolean isDisponivel;
     private boolean isPromocao;
     private double valor;
-    private Categoria categoria;
-    private Empresa empresa;
+    private String Keycategoria;
+    private String Keyempresa;
+
+    public Produto() {
+    }
+
+    public Produto(String nome, String imagem, boolean isDisponivel, boolean isPromocao, double valor, String keycategoria, String keyempresa) {
+        this.nome = nome;
+        this.imagem = imagem;
+        this.isDisponivel = isDisponivel;
+        this.isPromocao = isPromocao;
+        this.valor = valor;
+        Keycategoria = keycategoria;
+        Keyempresa = keyempresa;
+    }
 
     public String getNome() {
         return nome;
@@ -52,19 +67,24 @@ public class Produto {
         this.valor = valor;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public String getKeycategoria() {
+        return Keycategoria;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setKeycategoria(String keycategoria) {
+        Keycategoria = keycategoria;
     }
 
-    public Empresa getEmpresa() {
-        return empresa;
+    public String getKeyempresa() {
+        return Keyempresa;
     }
 
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
+    public void setKeyempresa(String keyempresa) {
+        Keyempresa = keyempresa;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 }

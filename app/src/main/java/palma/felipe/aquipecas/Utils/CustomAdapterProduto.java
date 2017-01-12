@@ -125,6 +125,7 @@ public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickL
                 .build(GlideRequest.BITMAP) // Constroi um pedido para processar a imagem como Bitmap
                 //.resize(200, 200) // Recorta a imagem no tamanho especifico
                 //.circle() // Arrendoda a imagem
+                .resize(150,130)
                 .into(imgCapa); // Abre a imagem no imageView passado
 
         return this;

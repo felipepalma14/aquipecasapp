@@ -24,14 +24,18 @@ import java.util.ArrayList;
 
 import palma.felipe.aquipecas.ListagemProdutoActivity;
 import palma.felipe.aquipecas.R;
+import palma.felipe.aquipecas.model.Ano;
+import palma.felipe.aquipecas.model.Marca;
+import palma.felipe.aquipecas.model.Modelo;
+import palma.felipe.aquipecas.service.CallFirebase;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MainFragment extends Fragment {
 
-    ArrayList<String> marcas = new ArrayList<>();
-    ArrayList<String> modelos = new ArrayList<>();
+    ArrayList<Marca> marcas = new ArrayList<>();
+    ArrayList<Modelo> modelos = new ArrayList<>();
     ArrayList<String> anos = new ArrayList<>();
     Spinner spMarcas;
     Spinner spModelos;
@@ -55,40 +59,48 @@ public class MainFragment extends Fragment {
         Chamar XML aqui
          */
 
-        spMarcas = (Spinner)v.findViewById(R.id.spinnerMarcaVeiculo);
-        spModelos = (Spinner)v.findViewById(R.id.spinnerModeloVeiculo);
-        spAnos = (Spinner)v.findViewById(R.id.spinnerAnoVeiculo);
-        loading = (ProgressBar)v.findViewById(R.id.loading);
-        btnBuscarPeca = (Button)v.findViewById(R.id.btnBuscarPorVeiculo);
+        spMarcas = (Spinner) v.findViewById(R.id.spinnerMarcaVeiculo);
+        spModelos = (Spinner) v.findViewById(R.id.spinnerModeloVeiculo);
+        spAnos = (Spinner) v.findViewById(R.id.spinnerAnoVeiculo);
+        loading = (ProgressBar) v.findViewById(R.id.loading);
+        btnBuscarPeca = (Button) v.findViewById(R.id.btnBuscarPorVeiculo);
 
         btnBuscarPeca.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String modeloSelecionado = spModelos.getSelectedItem().toString();
-                String anoSelecionado = spAnos.getSelectedItem().toString();
-                String marcaSelecionada = spMarcas.getSelectedItem().toString();
+                Modelo modeloSelecionado =(Modelo) spModelos.getSelectedItem();
+                Ano anoSelecionado = (Ano)spAnos.getSelectedItem();
+                Marca marcaSelecionada = (Marca)spMarcas.getSelectedItem();
 
-                Intent intent = new Intent(getActivity(),ListagemProdutoActivity.class);
+                Intent intent = new Intent(getActivity(), ListagemProdutoActivity.class);
 
-                Log.i("SELECIONADOS_MAIN",modeloSelecionado + " - " + anoSelecionado);
-                intent.putExtra("MARCA",marcaSelecionada);
-                intent.putExtra("MODELO",modeloSelecionado);
-                intent.putExtra("ANO",anoSelecionado);
+                intent.putExtra("MARCA", marcaSelecionada);
+
+                intent.putExtra("MODELO", modeloSelecionado);
+                //intent.putExtra("ANO", anoSelecionado);
 
                 startActivity(intent);
 
             }
         });
+
+
+
         database = FirebaseDatabase.getInstance();
         DatabaseReference refMarcas = database.getReference("marcas");
 
+        /*
+        Spinner Marcas
+         */
         refMarcas.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 marcas.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.i("Palma",snapshot.child("nome").getValue().toString());
-                    marcas.add(snapshot.child("nome").getValue().toString());
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Log.i("Palma", snapshot.child("nome").getValue().toString());
+                    Log.i("KEY_MARCA",snapshot.getKey());
+                    Marca marca = new Marca(snapshot.getKey(),snapshot.child("nome").getValue().toString());
+                    marcas.add(marca);
                 }
 
                 encontraMarcas();
@@ -111,20 +123,138 @@ public class MainFragment extends Fragment {
 
             }
         });
-
-
-
         return v;
     }
 
+
     private void encontraMarcas() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,marcas);
+        ArrayAdapter<Marca> adapter = new ArrayAdapter<Marca>(getActivity(), android.R.layout.simple_list_item_1, marcas);
         spMarcas.setAdapter(adapter);
 
         loading.setVisibility(View.GONE);
 
     }
 
+
+    public void encontraModelos(final Marca marca){
+        modelos.clear();
+        //anos.clear();
+        final CallFirebase callFirebase = new CallFirebase();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference refModelos = database.getReference("modelos");
+        refModelos.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()){
+                    String keyMarca = data.child("marca").getChildren().iterator().next().getKey().toString();
+                    if(keyMarca.equals(marca.getKey())){
+                        final Modelo modelo = new Modelo();
+                        modelo.setKey(data.getKey());
+                        modelo.setMarca(marca);
+                        modelo.setNome(data.child("modelo").child("nome").getValue().toString());
+                        //modelo.setAno();
+                        modelos.add(modelo);
+                    }
+
+
+                }
+
+                ArrayAdapter<Modelo> adapterModelo = new ArrayAdapter<Modelo>(getActivity(),
+                        android.R.layout.simple_list_item_1,modelos);
+                spModelos.setAdapter(adapterModelo);
+
+                spModelos.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        Modelo modelo = (Modelo)spModelos.getSelectedItem();
+                        encontraAnos(modelo);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void encontraAnos(final Modelo modelo){
+        DatabaseReference refModelo = database.getReference("modelos/"+ modelo.getKey()+"/anos");
+        refModelo.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                CallFirebase callFirebase = new CallFirebase();
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    for (DataSnapshot anoSnapshot : data.getChildren()) {
+                        Log.i("ANO_2", anoSnapshot.getKey());
+                        final String keyAno = anoSnapshot.getKey();
+                        /*
+                        callFirebase.getAnoByKey(anoSnapshot.getKey(), new IChamada<Ano>() {
+                            @Override
+                            public void retorno(Ano ano) {
+                                modelo.getAnos().add(ano);
+                                Log.i("CALL_ANO", ano.getNome());
+                                //Log.i("ANO_SIZE", modelo.getAnos().size() + "");
+                            }
+                        });
+                        */
+                        DatabaseReference anos = database.getReference("anos");
+
+                        anos.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot anoSnapShot: dataSnapshot.getChildren()) {
+                                    if(keyAno.equals(anoSnapShot.getKey())) {
+                                        Log.i("ANO_FUNCAO", anoSnapShot.getValue().toString());
+                                        Ano ano = new Ano();
+                                        Log.i("ANOS_FUNC",anoSnapShot.child("nome").getValue().toString());
+                                        ano.setNome(anoSnapShot.child("nome").getValue().toString());
+                                        ano.setCodigo(anoSnapShot.getKey());
+
+                                        modelo.getAnos().add(ano);
+                                    }
+                                }
+                                ArrayAdapter<Ano> adapterAno = new ArrayAdapter<Ano>(getActivity(),android.R.layout.simple_list_item_1,modelo.getAnos());
+
+                                spAnos.setAdapter(adapterAno);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                Log.i("ANO_SIZE", modelo.getAnos().size() + "");
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    /*
     public void encontraModelos(String marca){
         modelos.clear();
         anos.clear();
@@ -158,6 +288,7 @@ public class MainFragment extends Fragment {
             }
         });
     }
+    */
 
 
 }

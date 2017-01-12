@@ -1,20 +1,36 @@
 package palma.felipe.aquipecas.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by Roberlandio on 28/11/2016.
  */
-public class Modelo {
+public class Modelo implements Serializable{
+    private String key;
+    private Marca marca;
     private String nome;
-    private long codigo;
+    private ArrayList<Ano> anos = new ArrayList<>();
 
     public Modelo() {
     }
 
-    public Modelo(String nome, long codigo) {
-        this.nome = nome;
-        this.codigo = codigo;
+
+    public Marca getMarca() {
+        return marca;
     }
 
+    public void setMarca(Marca marca) {
+        this.marca = marca;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getNome() {
         return nome;
@@ -24,12 +40,18 @@ public class Modelo {
         this.nome = nome;
     }
 
-    public long getCodigo() {
-        return codigo;
+
+    public ArrayList<Ano> getAnos() {
+        return anos;
     }
 
-    public void setCodigo(long codigo) {
-        this.codigo = codigo;
+    public void setAnos(ArrayList<Ano> anos) {
+        this.anos = anos;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 }
 
