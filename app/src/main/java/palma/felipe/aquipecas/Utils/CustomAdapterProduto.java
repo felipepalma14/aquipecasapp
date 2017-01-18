@@ -40,7 +40,8 @@ public CustomAdapterProduto(Context context, ArrayList<Produto> lista) {
 @Override
 public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Cria nosso layout do adapter para ser repetido
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_produto, null);
+        //View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_produto, null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_produto2, null);
 
         // Passa o layout para dentro do ViewHolder (Nosso esquelo do layout)
         ViewHolder holder = new ViewHolder(view);

@@ -1,11 +1,14 @@
 package palma.felipe.aquipecas;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -19,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import palma.felipe.aquipecas.Utils.CustomAdapterProduto;
+import palma.felipe.aquipecas.Utils.GridSpacingItemDecoration;
 import palma.felipe.aquipecas.model.Marca;
 import palma.felipe.aquipecas.model.Modelo;
 import palma.felipe.aquipecas.model.Produto;
@@ -129,14 +133,23 @@ public class ListagemProdutoActivity extends AppCompatActivity implements Custom
         // Criar o adapter
 
         CustomAdapterProduto adapter = new CustomAdapterProduto(ListagemProdutoActivity.this, lista);
+
         // Recupera a referencia do nosso RecyclerView do layout
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.lista_produtos);
         // Conecta nosso RecyclerView com o Adapter
+        /*
         recyclerView.setAdapter(adapter);
         // Seta a orientacao do nosso RecyclerView como LinearLayout ( Vertical )
         GridLayoutManager grid = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
         grid.setOrientation(GridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(grid);
+        */
+
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2,dpToPx(10),true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
 
         // Verifica se existe livros na nossa lista e esconde o progressBar
 
@@ -167,5 +180,10 @@ public class ListagemProdutoActivity extends AppCompatActivity implements Custom
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 }

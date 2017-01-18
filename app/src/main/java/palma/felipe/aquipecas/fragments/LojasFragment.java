@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ public class LojasFragment extends Fragment implements CustomAdapter.AdapterList
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot data: dataSnapshot.getChildren()){
                     Empresa e = data.getValue(Empresa.class);
-                    System.out.println(e);
+                    Log.i("EMPRESA",e+"");
                     empresas.add(e);
                 }
                 //
