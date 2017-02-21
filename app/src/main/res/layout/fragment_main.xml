@@ -1,14 +1,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#dae0e9"
     tools:context="palma.felipe.aquipecas.fragments.MainFragment"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <RelativeLayout
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                         <Spinner
                         android:id="@+id/spinnerMarcaVeiculo"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         />
 
                     </LinearLayout>
@@ -54,7 +54,7 @@
                     <Spinner
                         android:id="@+id/spinnerModeloVeiculo"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="50dp"/>
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
@@ -65,15 +65,8 @@
                     <Spinner
                         android:id="@+id/spinnerAnoVeiculo"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="50dp"/>
                 </android.support.v7.widget.CardView>
-
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:id="@+id/progressBar"
-                    android:visibility="gone"/>
 
                 <Button
                     android:id="@+id/btnBuscarPorVeiculo"
@@ -83,7 +76,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
 
-
             </LinearLayout>
             <ProgressBar
                 android:id="@+id/loading"
@@ -92,6 +84,9 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+
         </RelativeLayout>
+
     </ScrollView>
 </FrameLayout>

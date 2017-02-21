@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -49,7 +50,6 @@ public class MainFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,6 +64,16 @@ public class MainFragment extends Fragment {
         spAnos = (Spinner) v.findViewById(R.id.spinnerAnoVeiculo);
         loading = (ProgressBar) v.findViewById(R.id.loading);
         btnBuscarPeca = (Button) v.findViewById(R.id.btnBuscarPorVeiculo);
+
+        /*
+        Disabilita o Toque na tela
+        No primeiro acesso
+        */
+
+        getActivity().getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        );
 
         btnBuscarPeca.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +106,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 marcas.clear();
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Log.i("Palma", snapshot.child("nome").getValue().toString());
                     Log.i("KEY_MARCA",snapshot.getKey());
@@ -108,6 +119,17 @@ public class MainFragment extends Fragment {
                 spMarcas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                        loading.setVisibility(View.VISIBLE);
+                        /*
+                        Disabilita o Toque na tela
+                        Quando usario troca a marca
+                        */
+
+                        getActivity().getWindow().setFlags(
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        );
                         encontraModelos(marcas.get(i));
                     }
 
@@ -131,10 +153,7 @@ public class MainFragment extends Fragment {
         ArrayAdapter<Marca> adapter = new ArrayAdapter<Marca>(getActivity(), android.R.layout.simple_list_item_1, marcas);
         spMarcas.setAdapter(adapter);
 
-        loading.setVisibility(View.GONE);
-
     }
-
 
     public void encontraModelos(final Marca marca){
         modelos.clear();
@@ -155,8 +174,6 @@ public class MainFragment extends Fragment {
                         //modelo.setAno();
                         modelos.add(modelo);
                     }
-
-
                 }
 
                 ArrayAdapter<Modelo> adapterModelo = new ArrayAdapter<Modelo>(getActivity(),
@@ -176,9 +193,6 @@ public class MainFragment extends Fragment {
                     }
                 });
 
-
-
-
             }
 
             @Override
@@ -193,22 +207,11 @@ public class MainFragment extends Fragment {
         refModelo.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                CallFirebase callFirebase = new CallFirebase();
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
                     for (DataSnapshot anoSnapshot : data.getChildren()) {
                         Log.i("ANO_2", anoSnapshot.getKey());
                         final String keyAno = anoSnapshot.getKey();
-                        /*
-                        callFirebase.getAnoByKey(anoSnapshot.getKey(), new IChamada<Ano>() {
-                            @Override
-                            public void retorno(Ano ano) {
-                                modelo.getAnos().add(ano);
-                                Log.i("CALL_ANO", ano.getNome());
-                                //Log.i("ANO_SIZE", modelo.getAnos().size() + "");
-                            }
-                        });
-                        */
+
                         DatabaseReference anos = database.getReference("anos");
 
                         anos.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -229,6 +232,16 @@ public class MainFragment extends Fragment {
                                 ArrayAdapter<Ano> adapterAno = new ArrayAdapter<Ano>(getActivity(),android.R.layout.simple_list_item_1,modelo.getAnos());
 
                                 spAnos.setAdapter(adapterAno);
+
+                                /*
+                                Loading
+                                 */
+
+                                loading.setVisibility(View.GONE);
+                                /*
+                                Habilita o acesso ao toque
+                                 */
+                                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             }
 
                             @Override
@@ -238,11 +251,6 @@ public class MainFragment extends Fragment {
                         });
                     }
                 }
-
-                Log.i("ANO_SIZE", modelo.getAnos().size() + "");
-
-
-
             }
 
             @Override
@@ -253,42 +261,5 @@ public class MainFragment extends Fragment {
 
 
     }
-
-    /*
-    public void encontraModelos(String marca){
-        modelos.clear();
-        anos.clear();
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference refMarcas = database.getReference("marcas");
-        refMarcas.orderByChild("nome").equalTo(marca).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot data: dataSnapshot.getChildren()){
-
-                    for(DataSnapshot modelo: data.child("modelos").getChildren()){
-                        modelos.add(modelo.child("modelo").child("nome").getValue().toString());
-                    }
-                    for(DataSnapshot modelo: data.child("modelos").getChildren()){
-                        anos.add(modelo.child("ano").child("nome").getValue().toString());
-                    }
-
-                }
-
-                ArrayAdapter<String> adapterModelo = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,modelos);
-                spModelos.setAdapter(adapterModelo);
-
-                ArrayAdapter<String> adapterAno = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,anos);
-                spAnos.setAdapter(adapterAno);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-    */
-
 
 }
