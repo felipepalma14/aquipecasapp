@@ -75,7 +75,6 @@
                     android:layout_height="?attr/actionBarSize"
                     android:minHeight="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
-                    android:background="#0b000000"
                     android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                    >
                     <TextView
@@ -84,6 +83,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
+                        android:textStyle="bold"
                         android:text="Pemaza - Peças e Pneus"/>
                 </android.support.v7.widget.Toolbar>
 
@@ -190,6 +190,7 @@
                             <TextView
                                 android:text="Vendedor"
                                 android:paddingLeft="10dp"
+                                android:textStyle="bold"
                                 android:layout_weight="8"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"

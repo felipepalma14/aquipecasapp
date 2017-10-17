@@ -61,19 +61,21 @@ public class ListagemProdutoActivity extends AppCompatActivity implements Custom
         Log.i("MODELO",modeloSelecionado.getNome());
 
 
-        rootRef.child("produtos").addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.child("produtoEmpresa").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot produto:dataSnapshot.getChildren()){
-                    String keyModelo = produto.child("modelo").getChildren().iterator().next().getKey().toString();
+                    String key = produto.child("modelos").getChildren().iterator().next().getKey();
+                    String keyModelo = produto.child("modelos").child(key).getChildren().iterator().next().getKey();
+
                     Log.i("KEY_PRODUTO",keyModelo + " = " + modeloSelecionado.getKey());
                     if(keyModelo.equals(modeloSelecionado.getKey())){
                         Produto p = new Produto();
-                        p.setNome(produto.child("peca").getValue().toString());
+                        p.setNome(produto.child("nome").getValue().toString());
                         p.setImagem(produto.child("imagem").getValue().toString());
-                        p.setValor(Double.valueOf(produto.child("valor").getValue().toString()));
+                        p.setValor(Double.valueOf(produto.child("preco").getValue().toString()));
 
-                        Log.i("KEY_PRODUTO",produto.child("peca").getValue().toString());
+                        Log.i("KEY_PRODUTO",produto.child("nome").getValue().toString());
                         produtos.add(p);
 
                     }

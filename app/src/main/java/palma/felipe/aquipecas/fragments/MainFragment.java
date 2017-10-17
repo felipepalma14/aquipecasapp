@@ -165,14 +165,19 @@ public class MainFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot data: dataSnapshot.getChildren()){
-                    String keyMarca = data.child("marca").getChildren().iterator().next().getKey().toString();
-                    if(keyMarca.equals(marca.getKey())){
-                        final Modelo modelo = new Modelo();
-                        modelo.setKey(data.getKey());
-                        modelo.setMarca(marca);
-                        modelo.setNome(data.child("modelo").child("nome").getValue().toString());
-                        //modelo.setAno();
-                        modelos.add(modelo);
+                    for(DataSnapshot dataMarca: data.child("marca").getChildren()) {
+                        String keyMarca = dataMarca.getKey();
+                        if (keyMarca.equals(marca.getKey())) {
+                            final Modelo modelo = new Modelo();
+                            modelo.setKey(data.getKey());
+                            modelo.setMarca(marca);
+                            modelo.setNome("Teste");
+                            String nomeModelo = data.child("nome").getValue(String.class);
+                            modelo.setNome(nomeModelo);
+                            Log.d("DEBUG",nomeModelo + "");
+                            //modelo.setAno();
+                            modelos.add(modelo);
+                        }
                     }
                 }
 
